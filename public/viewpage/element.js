@@ -39,6 +39,8 @@ export const formEditProduct = {
 export const formUpdateReview = {form:document.getElementById('form-update-review'),     
 errorContent: document.getElementById('form-update-review-error-content'),
 }
+//form to search product(s)
+export const formSearch = document.getElementById('form-search')
 
 
 //modal

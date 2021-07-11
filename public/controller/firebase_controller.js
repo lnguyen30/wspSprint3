@@ -82,6 +82,21 @@ export async function updatePassword(newPassword){
  
 }
 
+//fetches products after search
+export async function searchProducts(searchProductArray){
+    const productList = []
+    const snapShot = await firebase.firestore()
+            .collection(Constant.collectionNames.PRODUCTS)
+            .where('name', 'in', searchProductArray)
+            .get();
+    snapShot.forEach(doc=>{
+        const p = new Product(doc.data());
+        p.docId = doc.id;
+        productList.push(p)
+    })
+    return productList
+}
+
 //grabs the purchase from firebase to webpage
 export async function getPurchaseHistory(uid){
     // retrieves purchase history from firebase based on the uid, then orders the history by timestamp, 

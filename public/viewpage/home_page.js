@@ -125,6 +125,58 @@ function buildProductView(product, index){
     `;
 
  }
+// re-renders the home page after search 
+ export function buildProductSearchView(productList){
+     let html = ''
+
+        //checks if any products are added, if not, display message
+    if(productList.length == 0){
+        html += '<h4>No Products Currently</h4>'
+        Element.root.innerHTML = html;
+        return;
+    }
+       //each product is rendered
+    for(let i = 0; i<productList.length; i++){
+        html+= buildProductView(productList[i], i)
+    }
+
+    
+    Element.root.innerHTML = html; // products will be rendered at this point
+
+       //event listener for decreasing items
+       const decForms = document.getElementsByClassName('form-dec-qty');
+       for(let i =0; i< decForms.length; i++){
+           decForms[i].addEventListener('submit', e=>{
+               e.preventDefault();
+               //index of the products array from form
+               const p = products[e.target.index.value]
+               //dec p from cart
+               cart.removeItem(p);
+               //updates label amount
+               document.getElementById('qty-' + p.docId).innerHTML = (p.qty == 0 || p.qty == null) ? 'Add' : p.qty;
+               //upates shopping cart count
+               Element.shoppingCartCount.innerHTML = cart.getTotalQty();
+           })
+       }
+   
+       //event listener for increasing items
+       const incForms = document.getElementsByClassName('form-inc-qty');
+       for(let i =0; i< incForms.length; i++){
+           incForms[i].addEventListener('submit', e=>{
+               e.preventDefault();
+               //index of the products array from form
+               const p = products[e.target.index.value]
+               //inc p to cart
+               cart.addItem(p);
+               // updates label amount
+               document.getElementById('qty-' + p.docId).innerHTML = p.qty;
+               Element.shoppingCartCount.innerHTML = cart.getTotalQty();
+   
+           })
+       }
+   
+       DetailsPage.addDetailsButtonListeners(); //event listener for details button
+ }
 
 
 //user calls cart object when signed in

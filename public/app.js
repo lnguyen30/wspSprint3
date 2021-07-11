@@ -7,9 +7,10 @@ import * as Products from './viewpage/product_page.js'
 import * as Users from './viewpage/user_page.js'
 import * as Route from './controller/route.js'
 import * as Update from './controller/edit_review.js'
+import * as Search from './viewpage/search_page.js'
 
 
-
+Search.addEventListeners();
 Auth.addEventListeners();
 Home.addEventListeners();
 Purchase.addEventListeners();

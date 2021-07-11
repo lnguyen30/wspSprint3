@@ -5,6 +5,7 @@ import * as Profile from '../viewpage/profile_page.js'
 import * as Product from '../viewpage/product_page.js'
 import * as User from '../viewpage/user_page.js'
 import * as Details from '../viewpage/details_page.js'
+import * as Search from '../viewpage/search_page.js'
 
 
 export const routePathname ={
@@ -14,7 +15,8 @@ export const routePathname ={
     CART: '/cart',
     PRODUCT: '/product',
     USER: '/user',
-    DETAILS: '/details'
+    DETAILS: '/details',
+    SEARCH: '/search',
 
 }
 
@@ -26,7 +28,8 @@ export const routes = [
     {pathname: routePathname.PROFILE, page: Profile.profile_page}, 
     {pathname: routePathname.PRODUCT, page: Product.product_page}, 
     {pathname: routePathname.USER, page: User.users_page}, 
-    {pathname: routePathname.DETAILS, page: Details.details_page}
+    {pathname: routePathname.DETAILS, page: Details.details_page},
+    {pathname: routePathname.SEARCH, page: Search.search_page},
 ];
 
 export function routing(pathname, hash){
