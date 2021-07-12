@@ -152,24 +152,6 @@ export async function getProductListPagination(){
 }
 
 
-
-// export async function previousPage(firstProduct) {
-
-//     let products = [];
-//     const prevList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
-//         .orderBy('name')
-//         .endBefore(firstProduct)
-//         .limitToLast(8)
-//         .get();
-//     prevList.forEach(doc => {
-//         const p = new Product(doc.data());
-//         p.docId = doc.id;
-//         products.push(p);
-//     });
-
-//     return products;
-// }
-
 //fetches single product for details page
 export async function getOneProduct(productId){
     const ref = await firebase.firestore()
