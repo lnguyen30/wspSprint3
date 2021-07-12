@@ -135,6 +135,44 @@ export async function getProductListHome(){
     return products;
 }
 
+// firebase function to fetch all products for home page
+export async function getProductListPagination(){
+    const products = [];
+    //fetches all the products information in firebase that are labeled under products label
+    const snapshot = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
+        .orderBy('name')
+        .limit(2)
+        .get();
+
+    last = snapshot.docs[snapshot.docs.length-1]//last object in array
+    snapshot.forEach( doc =>{
+        //constructs each product with doc.data
+        const p = new Product(doc.data())
+        //assign the firestore id to product 
+        p.docId = doc.id;
+        products.push(p);
+    })
+    return products;
+}
+
+export async function getProductListNext(){
+    const products = []
+    const snapshot = firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
+    .orderBy('name')
+    .startAfter(last)
+    .limit(2)
+    .get();
+    last = snapshot.docs[snapshot.docs.length-1]//last object in array
+    snapshot.forEach( doc =>{
+        //constructs each product with doc.data
+        const p = new Product(doc.data())
+        //assign the firestore id to product 
+        p.docId = doc.id;
+        products.push(p);
+    })
+    return products;
+}
+
 //fetches single product for details page
 export async function getOneProduct(productId){
     const ref = await firebase.firestore()
