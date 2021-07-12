@@ -135,6 +135,56 @@ export async function getProductListHome(){
     return products;
 }
 
+export async function getProductListPagination(){
+    let products = [];
+    const snapShot = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
+        .orderBy('name')
+        .limit(2)
+        .get();
+    snapShot.forEach(doc => {
+        const p = new Product(doc.data());
+        p.docId = doc.id; // docId field for the product is in the firestore's doc.id field.
+        products.push(p);
+    });
+
+    return products;
+
+}
+
+export async function getNextPage(lastProduct){
+    let products = [];
+    const nextList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
+        .orderBy('name')
+        .startAfter(lastProduct)
+        .limit(2)
+        .get();
+    nextList.forEach(doc => {
+        const p = new Product(doc.data());
+        p.docId = doc.id;
+        products.push(p);
+    });
+
+    return products;
+
+}
+
+export async function getPreviousPage(firstProduct) {
+
+    let products = [];
+    const prevList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
+        .orderBy('name')
+        .endBefore(firstProduct)
+        .limitToLast(2)
+        .get();
+    prevList.forEach(doc => {
+        const p = new Product(doc.data());
+        p.docId = doc.id;
+        products.push(p);
+    });
+
+    return products;
+}
+
 //fetches single product for details page
 export async function getOneProduct(productId){
     const ref = await firebase.firestore()

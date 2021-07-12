@@ -21,13 +21,15 @@ export function addEventListeners(){
 //global variable
 export let cart;
 
-export async function home_page(){
-    
+
+
+/**********Home_page function for pagination**********/
+export async function home_page(products = []){
     let html = '<h1>Enjoy Shopping</h1>'
-    let products;
     try{
-        products = await FirebaseController.getProductListHome();
-        //if cart isn't empty
+        if(products.length ==0){
+            products = await FirebaseController.getProductListPagination();
+        }
         if(cart){
             cart.items.forEach(item =>{
                 //parses through each item and finds the specific product
@@ -40,54 +42,46 @@ export async function home_page(){
         if(Constant.DEV) console.log(e);
         Util.info('Cannot get product info', JSON.stringify(e));
     }
-    //each product is rendered
+       //each product is rendered
     for(let i = 0; i<products.length; i++){
         html+= buildProductView(products[i], i)
     }
 
+    html+=`
+    <hr>
+    <div class="container pt-3 bg-light">
+        <form method="post" class="form-prev-page">
+            <button class="btn btn-primary float-start">Previous</button>
+        </form>
+        <form method="post" class="form-next-page">
+            <button class="btn btn-primary float-start">Next</button>
+        </form>
+    </div>
+    `
+
     Element.root.innerHTML = html; // products will be rendered at this point
 
-    //checks if any products are added, if not, display message
-    if(products.length == 0){
-        html += '<h4>No Products Currently</h4>'
-        Element.root.innerHTML = html;
-        return;
-    }
+    //event listener for next button
+    const nextPageForms = document.getElementsByClassName('form-next-page');
+    nextPageForms[0].addEventListener('submit', async e => {
+        e.preventDefault();
+        const productsFinalIndex = products.length - 1;
+        const finalProductName = products[productsFinalIndex].name;
 
+        products = await FirebaseController.getNextPage(finalProductName);
+        home_page(products);
+    });
 
-    //event listener for decreasing items
-    const decForms = document.getElementsByClassName('form-dec-qty');
-    for(let i =0; i< decForms.length; i++){
-        decForms[i].addEventListener('submit', e=>{
-            e.preventDefault();
-            //index of the products array from form
-            const p = products[e.target.index.value]
-            //dec p from cart
-            cart.removeItem(p);
-            //updates label amount
-            document.getElementById('qty-' + p.docId).innerHTML = (p.qty == 0 || p.qty == null) ? 'Add' : p.qty;
-            //upates shopping cart count
-            Element.shoppingCartCount.innerHTML = cart.getTotalQty();
-        })
-    }
+    //event listener for previous button
+    const prevPageForms = document.getElementsByClassName('form-prev-page');
+    prevPageForms[0].addEventListener('submit', async e => {
+        e.preventDefault();
 
-    //event listener for increasing items
-    const incForms = document.getElementsByClassName('form-inc-qty');
-    for(let i =0; i< incForms.length; i++){
-        incForms[i].addEventListener('submit', e=>{
-            e.preventDefault();
-            //index of the products array from form
-            const p = products[e.target.index.value]
-            //inc p to cart
-            cart.addItem(p);
-            // updates label amount
-            document.getElementById('qty-' + p.docId).innerHTML = p.qty;
-            Element.shoppingCartCount.innerHTML = cart.getTotalQty();
+        const firstProductName = products[0].name;
 
-        })
-    }
-
-    DetailsPage.addDetailsButtonListeners(); //event listener for details button
+        products = await FirebaseController.getPreviousPage(firstProductName);
+        home_page(products);
+    });
 
 }
 
