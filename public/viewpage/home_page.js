@@ -18,9 +18,30 @@ export function addEventListeners(){
     })
 }
 
+export function addNextPageEventListner(form, products){
+    form[0].addEventListener('submit', async e => {
+        e.preventDefault();
+        const lastIndex = products.length - 1;
+        const finalProductName = products[lastIndex].name;
+        //next list of products will start at the last index and grabs the next set of products
+        products = await FirebaseController.getNextPage(finalProductName);
+        home_page(products);
+    });
+}
+
+export function addPreviousPageEventListener(form, products){
+    form[0].addEventListener('submit', async e => {
+        e.preventDefault();
+        //grabs the previous name of the product
+        const prevProductName = products[0].name;
+        //passes the name to fetch the previous list of products
+        products = await FirebaseController.getPreviousPage(prevProductName);
+        home_page(products);
+    });
+}
+
 //global variable
 export let cart;
-
 
 
 /**********Home_page function for pagination**********/
@@ -51,10 +72,10 @@ export async function home_page(products = []){
     <hr>
     <div class="container pt-3 bg-light">
         <form method="post" class="form-prev-page">
-            <button class="btn btn-primary float-start">Previous</button>
+            <button class="btn btn-secondary float-start">Previous</button>
         </form>
         <form method="post" class="form-next-page">
-            <button class="btn btn-primary float-start">Next</button>
+            <button class="btn btn-secondary float-start">Next</button>
         </form>
     </div>
     `
@@ -63,25 +84,12 @@ export async function home_page(products = []){
 
     //event listener for next button
     const nextPageForms = document.getElementsByClassName('form-next-page');
-    nextPageForms[0].addEventListener('submit', async e => {
-        e.preventDefault();
-        const productsFinalIndex = products.length - 1;
-        const finalProductName = products[productsFinalIndex].name;
-
-        products = await FirebaseController.getNextPage(finalProductName);
-        home_page(products);
-    });
+    addNextPageEventListner(nextPageForms, products)
 
     //event listener for previous button
     const prevPageForms = document.getElementsByClassName('form-prev-page');
-    prevPageForms[0].addEventListener('submit', async e => {
-        e.preventDefault();
+    addPreviousPageEventListener(prevPageForms, products)
 
-        const firstProductName = products[0].name;
-
-        products = await FirebaseController.getPreviousPage(firstProductName);
-        home_page(products);
-    });
 
     DetailsPage.addDetailsButtonListeners(); //event listener for details button
 

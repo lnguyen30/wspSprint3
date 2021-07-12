@@ -139,7 +139,7 @@ export async function getProductListPagination(){
     let products = [];
     const snapShot = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
         .orderBy('name')
-        .limit(2)
+        .limit(8)
         .get();
     snapShot.forEach(doc => {
         const p = new Product(doc.data());
@@ -156,7 +156,7 @@ export async function getNextPage(lastProduct){
     const nextList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
         .orderBy('name')
         .startAfter(lastProduct)
-        .limit(2)
+        .limit(8)
         .get();
     nextList.forEach(doc => {
         const p = new Product(doc.data());
@@ -174,7 +174,7 @@ export async function getPreviousPage(firstProduct) {
     const prevList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
         .orderBy('name')
         .endBefore(firstProduct)
-        .limitToLast(2)
+        .limitToLast(8)
         .get();
     prevList.forEach(doc => {
         const p = new Product(doc.data());
