@@ -83,6 +83,8 @@ export async function home_page(products = []){
         home_page(products);
     });
 
+    DetailsPage.addDetailsButtonListeners(); //event listener for details button
+
 }
 
 function buildProductView(product, index){
