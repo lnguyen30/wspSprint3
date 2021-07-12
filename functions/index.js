@@ -24,13 +24,68 @@ exports.cf_deleteUser = functions.https.onCall(deleteUser);
 exports.cf_deleteReview = functions.https.onCall(deleteReview); 
 exports.cf_getReviewById = functions.https.onCall(getReviewById);
 exports.cf_updateReview = functions.https.onCall(updateReview);
-
+exports.cf_nextPage = functions.https.onCall(nextPage);
+exports.cf_previousPage = functions.https.onCall(previousPage);
 
 
 //returns true or false if the email passed in is an admin account
 function isAdmin(email){
     return Constant.adminEmails.includes(email);
 }
+
+
+async function previousPage(data) {
+   
+    try {
+      let products = [];
+      const prev = await admin.firestore().collection(Constant.collectionNames.PRODUCT)
+        .orderBy('name')
+        .endBefore(data.name)
+        .limitToLast(8)
+        .get();
+      prev.forEach(doc => {
+        // Define 5 variables and assign them concurrently
+        const { name, price, summary, imageName, imageURL } = doc.data();
+        const p = { name, price, summary, imageName, imageURL };
+        p.docId = doc.id;
+  
+        products.push(p);
+      });
+  
+      return products;
+    } catch (e) {
+      if (Constant.DEV) console.log(e);
+      throw new functions.https.HttpsError('internal', 'previousPage failed');
+    }
+  
+  }
+
+async function nextPage(data) {
+  
+    try {
+      let products = [];
+      const next = await admin.firestore().collection(Constant.collectionNames.PRODUCT)
+        .orderBy('name')
+        .startAfter(data.name)
+        .limit(8)
+        .get();
+      next.forEach(doc => {
+        // Define 5 variables and assign them concurrently
+        const { name, price, summary, imageName, imageURL } = doc.data();
+        const p = { name, price, summary, imageName, imageURL };
+        p.docId = doc.id;
+  
+        products.push(p);
+      });
+  
+      return products;
+    } catch (e) {
+      if (Constant.DEV) console.log(e);
+      throw new functions.https.HttpsError('internal', 'getNextProductPage failed');
+    }
+}
+
+
 
 //cloud function to update replies, called in firebase controller
 async function updateReview(reviewInfo, context){

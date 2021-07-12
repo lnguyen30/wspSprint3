@@ -21,10 +21,10 @@ export function addEventListeners(){
 export function addNextPageEventListner(form, products){
     form[0].addEventListener('submit', async e => {
         e.preventDefault();
-        const lastIndex = products.length - 1;
-        const finalProductName = products[lastIndex].name;
+        //const lastIndex = products.length - 1;
+        const nextProductName = products[products.length - 1].name;
         //next list of products will start at the last index and grabs the next set of products
-        products = await FirebaseController.getNextPage(finalProductName);
+        products = await FirebaseController.nextPage(nextProductName);
         home_page(products);
     });
 }
@@ -35,7 +35,7 @@ export function addPreviousPageEventListener(form, products){
         //grabs the previous name of the product
         const prevProductName = products[0].name;
         //passes the name to fetch the previous list of products
-        products = await FirebaseController.getPreviousPage(prevProductName);
+        products = await FirebaseController.previousPage(prevProductName);
         home_page(products);
     });
 }

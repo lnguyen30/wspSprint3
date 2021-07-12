@@ -151,39 +151,24 @@ export async function getProductListPagination(){
 
 }
 
-export async function getNextPage(lastProduct){
-    let products = [];
-    const nextList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
-        .orderBy('name')
-        .startAfter(lastProduct)
-        .limit(8)
-        .get();
-    nextList.forEach(doc => {
-        const p = new Product(doc.data());
-        p.docId = doc.id;
-        products.push(p);
-    });
 
-    return products;
 
-}
+// export async function previousPage(firstProduct) {
 
-export async function getPreviousPage(firstProduct) {
+//     let products = [];
+//     const prevList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
+//         .orderBy('name')
+//         .endBefore(firstProduct)
+//         .limitToLast(8)
+//         .get();
+//     prevList.forEach(doc => {
+//         const p = new Product(doc.data());
+//         p.docId = doc.id;
+//         products.push(p);
+//     });
 
-    let products = [];
-    const prevList = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
-        .orderBy('name')
-        .endBefore(firstProduct)
-        .limitToLast(8)
-        .get();
-    prevList.forEach(doc => {
-        const p = new Product(doc.data());
-        p.docId = doc.id;
-        products.push(p);
-    });
-
-    return products;
-}
+//     return products;
+// }
 
 //fetches single product for details page
 export async function getOneProduct(productId){
@@ -364,4 +349,34 @@ export async function updateReview(review){
     await cf_updateReview({docId, data});
 }
 
+
+
+const cf_nextPage = firebase.functions().httpsCallable('cf_nextPage')
+export async function nextPage(nextProductName) {
+    let products = [];
+
+    const next = await cf_nextPage({ name: nextProductName })
+    next.data.forEach(data => {
+        const p = new Product(data);
+        p.docId = data.docId;
+        products.push(p);
+    });
+
+    return products;
+}
+
+
+const cf_previousPage = firebase.functions().httpsCallable('cf_previousPage')
+export async function previousPage(prevProductName) {
+    let products = [];
+
+    const prev = await cf_previousPage({ name: prevProductName })
+    prev.data.forEach(data => {
+        const p = new Product(data);
+        p.docId = data.docId;
+        products.push(p);
+    });
+
+    return products;
+}
 //deleteReview, might pass in user's email for authentication
