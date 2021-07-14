@@ -10,6 +10,14 @@ li {
     padding-right: 15px;
 }
 
+#prevButton{
+    padding-right: 15px;
+}
+
+#nextButton{
+    padding-right: 15px;
+}
+
 .btn btn-outline-success{
     padding-right: 15px;
 }

@@ -21,7 +21,7 @@ export function addEventListeners(){
 export function addNextPageEventListner(form, products){
     form[0].addEventListener('submit', async e => {
         e.preventDefault();
-        //const lastIndex = products.length - 1;
+        //when user clicks on next, the last product (example 8th product) will start from there
         const nextProductName = products[products.length - 1].name;
         //next list of products will start at the last index and grabs the next set of products
         products = await FirebaseController.nextPage(nextProductName);
@@ -49,6 +49,7 @@ export async function home_page(products = []){
     let html = '<h1>Enjoy Shopping</h1>'
     try{
         if(products.length ==0){
+            //if there is not products initially, get first 8 products from firbase function
             products = await FirebaseController.getProductListPagination();
         }
         if(cart){
@@ -68,14 +69,17 @@ export async function home_page(products = []){
         html+= buildProductView(products[i], i)
     }
 
+
+      
+    // renders next and previous buttons
     html+=`
     <hr>
     <div class="container pt-3 bg-light">
         <form method="post" class="form-prev-page">
-            <button class="btn btn-secondary float-start">Previous</button>
+            <button style="margin: 5px" class="btn btn-secondary float-start">Previous</button>
         </form>
         <form method="post" class="form-next-page">
-            <button class="btn btn-secondary float-start">Next</button>
+            <button style="margin: 5px" class="btn btn-secondary float-start">Next</button>
         </form>
     </div>
     `
@@ -91,10 +95,44 @@ export async function home_page(products = []){
     addPreviousPageEventListener(prevPageForms, products)
 
 
+       //event listener for decreasing items
+       const decForms = document.getElementsByClassName('form-dec-qty');
+       for(let i =0; i< decForms.length; i++){
+           decForms[i].addEventListener('submit', e=>{
+               e.preventDefault();
+               //index of the products array from form
+               const p = products[e.target.index.value]
+               //dec p from cart
+               cart.removeItem(p);
+               //updates label amount
+               document.getElementById('qty-' + p.docId).innerHTML = (p.qty == 0 || p.qty == null) ? 'Add' : p.qty;
+               //upates shopping cart count
+               Element.shoppingCartCount.innerHTML = cart.getTotalQty();
+           })
+       }
+   
+       //event listener for increasing items
+       const incForms = document.getElementsByClassName('form-inc-qty');
+       for(let i =0; i< incForms.length; i++){
+           incForms[i].addEventListener('submit', e=>{
+               e.preventDefault();
+               //index of the products array from form
+               const p = products[e.target.index.value]
+               //inc p to cart
+               cart.addItem(p);
+               // updates label amount
+               document.getElementById('qty-' + p.docId).innerHTML = p.qty;
+               Element.shoppingCartCount.innerHTML = cart.getTotalQty();
+   
+           })
+       }
+
+
     DetailsPage.addDetailsButtonListeners(); //event listener for details button
 
 }
 
+// renders each product 
 function buildProductView(product, index){
     return `
     <div class="card" style="width: 18rem; display: inline-block">
@@ -144,10 +182,7 @@ function buildProductView(product, index){
         html+= buildProductView(productList[i], i)
     }
 
-    
-    Element.root.innerHTML = html; // products will be rendered at this point
-
-       //event listener for decreasing items
+    //event listener for decreasing items
        const decForms = document.getElementsByClassName('form-dec-qty');
        for(let i =0; i< decForms.length; i++){
            decForms[i].addEventListener('submit', e=>{
@@ -178,6 +213,10 @@ function buildProductView(product, index){
    
            })
        }
+
+    Element.root.innerHTML = html; // products will be rendered at this point
+
+       
    
        DetailsPage.addDetailsButtonListeners(); //event listener for details button
  }
