@@ -52,13 +52,11 @@ export async function home_page(products = []){
             //if there is not products initially, get first 8 products from firbase function
             products = await FirebaseController.getProductListPagination();
         }
-        if(cart){
-            cart.items.forEach(item =>{
-                //parses through each item and finds the specific product
-                const product = products.find(p=> item.docId == p.docId)
-                //updates label
-                product.qty = item.qty;
-            })
+       if (cart) {
+            cart.items.forEach(item => {
+                const product = products.find(p => item.docId == p.docId);
+                if (product) product.qty = item.qty;
+            });
         }
     }catch(e){
         if(Constant.DEV) console.log(e);
